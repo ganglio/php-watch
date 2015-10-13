@@ -23,7 +23,7 @@ class Watch
     private $recursive;
 
     /**
-     * Costructor
+     * Constructor
      * @param string  $path      The path to watch
      * @param boolean $recursive Recurse subdirectory?
      */
