@@ -18,20 +18,26 @@ class WatchTest extends \PHPUnit_Framework_TestCase
         $this->watcher = null;
     }
 
-    public function testConstructor()
+    public function testGetSetPath()
     {
+        $this->watcher->setPath("./test/fixtures/subfolder");
         $this->assertEquals(
-            "./test/fixtures",
+            "./test/fixtures/subfolder",
             $this->watcher->getPath()
         );
+    }
 
-        $this->assertTrue(
+    public function testGetSetRecursive()
+    {
+        $this->watcher->setRecursive(false);
+        $this->assertFalse(
             $this->watcher->getRecursive()
         );
     }
 
     public function testNumberOfWatchedObjectsRecursive()
     {
+        $this->watcher->setPath("./test/fixtures");
         $this->watcher->setRecursive(true);
         $this->assertEquals(
             9,
@@ -41,6 +47,7 @@ class WatchTest extends \PHPUnit_Framework_TestCase
 
     public function testNumberOfWatchedObjectsNonRecursive()
     {
+        $this->watcher->setPath("./test/fixtures");
         $this->watcher->setRecursive(false);
         $this->assertEquals(
             5,
