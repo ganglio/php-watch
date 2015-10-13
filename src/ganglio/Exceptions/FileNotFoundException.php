@@ -9,7 +9,8 @@ class FileNotFoundException extends \Exception
      * @param string $message
      * @param string $filename
      */
-    public function __construct($filename) {
+    public function __construct($filename)
+    {
         parent::__construct("File $filename not found");
         $this->filename = $filename;
     }
@@ -17,7 +18,8 @@ class FileNotFoundException extends \Exception
     /**
      * @return string
      */
-    public function getFilename() {
+    public function getFilename()
+    {
         return $this->filename;
     }
 }

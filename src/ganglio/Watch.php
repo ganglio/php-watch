@@ -93,7 +93,7 @@ class Watch
 
         if (!$this->recursive) {
             $di = new \DirectoryIterator($this->path);
-            $ii = new \CallbackFilterIterator($di, function($current){
+            $ii = new \CallbackFilterIterator($di, function ($current) {
                 return !$current->isDot();
             });
         } else {
