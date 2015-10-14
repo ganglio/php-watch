@@ -63,19 +63,26 @@ class WatchTest extends \PHPUnit_Framework_TestCase
 
     public function testOnIllegalArgumentExceptionEvent()
     {
-        $this->setExpectedException('\InvalidArgumentException', 2);
-        $this->watcher->on("destroy", function ($a) { return 33; });
+        $this->setExpectedException('\InvalidArgumentException', Watch::ERR_UNIDENTIFIED_EVENT_NAME);
+        $this->watcher->on("destroy", function ($a) {
+            return 33;
+        });
     }
 
     public function testOnIllegalArgumentExceptionCallbackParams()
     {
-        $this->setExpectedException('\InvalidArgumentException', 4);
-        $this->watcher->on("delete", function () { return 33; });
+        $this->setExpectedException('\InvalidArgumentException', Watch::ERR_CALLBACK_FEW_PARAMETERS);
+        $this->watcher->on("delete", function () {
+            return 33;
+        });
     }
 
     public function testOn()
     {
-        $cid = $this->watcher->on("create", function ($a) { echo "create callback"; });
+        $cid = $this->watcher->on("create", function ($a) {
+            echo "create callback";
+        });
+
         $this->assertContains(
             $cid,
             $this->watcher->getCallbacks()
@@ -84,7 +91,10 @@ class WatchTest extends \PHPUnit_Framework_TestCase
 
     public function testUnbind()
     {
-        $cid = $this->watcher->on("create", function ($a) { echo "test"; });
+        $cid = $this->watcher->on("create", function ($a) {
+            echo "test";
+        });
+
         $this->watcher->unbind($cid);
 
         $this->assertNotContains(

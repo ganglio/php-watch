@@ -125,7 +125,7 @@ class Watch
             throw new \InvalidArgumentException("Argument 2 need to be either 'create', 'delete' or 'update'", self::ERR_UNIDENTIFIED_EVENT_NAME);
         }
 
-        $this->callbacks[$callback_id] = new Callback($event,$callback);
+        $this->callbacks[$callback_id] = new Callback($event, $callback);
 
         return $callback_id;
     }
@@ -169,7 +169,8 @@ class Watch
      * @param  Array[FSObjects] $objects
      * @return Array[String=>Array[FSObjects]]
      */
-    private function _diff($objects) {
+    private function _diff($objects)
+    {
 
         $diff = [
             "+" => [],
@@ -177,7 +178,7 @@ class Watch
             "!" => [],
         ];
 
-        $keys = array_merge(array_keys($this->fsObjects,$objects));
+        $keys = array_merge(array_keys($this->fsObjects, $objects));
         foreach ($keys as $key) {
             if (!array_key_exists($key, $this->fsObjects)) {
                 $diff["+"][] = $key;

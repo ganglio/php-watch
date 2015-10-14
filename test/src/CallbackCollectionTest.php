@@ -30,7 +30,33 @@ class CallbackCollectionTest extends \PHPUnit_Framework_TestCase
             isset($co['test'])
         );
 
+        $co[] = new Callback("test", function () {
+            echo "test";
+        });
+
+        $this->assertTrue(
+            isset($co[0])
+        );
+
+        $this->assertEquals(
+            "test",
+            $co[0]->type
+        );
     }
+
+    public function testCallbackCollectionInvokeWithoutType()
+    {
+
+        $this->setExpectedException('\InvalidArgumentException', CallbackCollection::ERR_NUM_ARGUMENTS);
+
+        $co = new CallbackCollection();
+        $co[] = new Callback("test", function ($a) {
+            return $a;
+        });
+
+        $co();
+    }
+
     public function testCallbackCollectionInvoke()
     {
         $co = new CallbackCollection();

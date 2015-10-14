@@ -82,9 +82,9 @@ class CallbackCollection implements \ArrayAccess
         $type = array_shift($args);
         $out = [];
 
-        foreach ($this->callbacks as $cid=>$callback) {
+        foreach ($this->callbacks as $cid => $callback) {
             if ($callback->type == $type) {
-                $res = call_user_func_array($callback,$args);
+                $res = call_user_func_array($callback, $args);
                 if (!is_null($res)) {
                     $out[$cid] = $res;
                 }

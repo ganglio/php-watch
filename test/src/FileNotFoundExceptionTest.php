@@ -12,7 +12,8 @@ class FileNotFoundExceptionTest extends \PHPUnit_Framework_TestCase
         throw new FileNotFoundException("test");
     }
 
-    public function testGetFilename() {
+    public function testGetFilename()
+    {
         try {
             throw new FileNotFoundException("test");
         } catch (FileNotFoundException $e) {
