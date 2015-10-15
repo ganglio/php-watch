@@ -6,65 +6,69 @@ use ganglio\Watch\Watch;
 
 class WatchTest extends \PHPUnit_Framework_TestCase
 {
-    private $watcher = null;
-
-    protected function setUp()
-    {
-        $this->watcher = new Watch("./test/fixtures", true);
-    }
-
-    protected function tearDown()
-    {
-        $this->watcher = null;
-    }
-
     public function testGetSetPath()
     {
-        $this->watcher->setPath("./test/fixtures/subfolder");
+        $watcher = new Watch("./test/fixtures", true);
+
+        $watcher->setPath("./test/fixtures/subfolder");
+
         $this->assertEquals(
             "./test/fixtures/subfolder",
-            $this->watcher->getPath()
+            $watcher->getPath()
         );
     }
 
     public function testGetSetRecursive()
     {
-        $this->watcher->setRecursive(false);
+        $watcher = new Watch("./test/fixtures", true);
+
+        $watcher->setRecursive(false);
+
         $this->assertFalse(
-            $this->watcher->getRecursive()
+            $watcher->getRecursive()
         );
     }
 
     public function testNumberOfWatchedObjectsRecursive()
     {
-        $this->watcher->setPath("./test/fixtures");
-        $this->watcher->setRecursive(true);
+        $watcher = new Watch("./test/fixtures", true);
+
+        $watcher->setPath("./test/fixtures");
+        $watcher->setRecursive(true);
+
         $this->assertEquals(
             9,
-            $this->watcher->getNumberOfWatchedObjects()
+            $watcher->getNumberOfWatchedObjects()
         );
     }
 
     public function testNumberOfWatchedObjectsNonRecursive()
     {
-        $this->watcher->setPath("./test/fixtures");
-        $this->watcher->setRecursive(false);
+        $watcher = new Watch("./test/fixtures", true);
+
+        $watcher->setPath("./test/fixtures");
+        $watcher->setRecursive(false);
+
         $this->assertEquals(
-            5,
-            $this->watcher->getNumberOfWatchedObjects()
+            4,
+            $watcher->getNumberOfWatchedObjects()
         );
     }
 
     public function testOnIllegalArgumentExceptionCallback()
     {
         $this->setExpectedException('\InvalidArgumentException', Watch::ERR_NOT_CLOSURE);
-        $this->watcher->on("create", 33);
+
+        $watcher = new Watch("./test/fixtures", true);
+        $watcher->on("create", 33);
     }
 
     public function testOnIllegalArgumentExceptionEvent()
     {
         $this->setExpectedException('\InvalidArgumentException', Watch::ERR_UNIDENTIFIED_EVENT_NAME);
-        $this->watcher->on("destroy", function ($a) {
+
+        $watcher = new Watch("./test/fixtures", true);
+        $watcher->on("unknown", function ($a) {
             return 33;
         });
     }
@@ -72,34 +76,86 @@ class WatchTest extends \PHPUnit_Framework_TestCase
     public function testOnIllegalArgumentExceptionCallbackParams()
     {
         $this->setExpectedException('\InvalidArgumentException', Watch::ERR_CALLBACK_FEW_PARAMETERS);
-        $this->watcher->on("delete", function () {
+
+        $watcher = new Watch("./test/fixtures", true);
+        $watcher->on("delete", function () {
             return 33;
         });
     }
 
     public function testOn()
     {
-        $cid = $this->watcher->on("create", function ($a) {
+        $watcher = new Watch("./test/fixtures", true);
+
+        $cid = $watcher->on("create", function ($a) {
             echo "create callback";
         });
 
         $this->assertContains(
             $cid,
-            $this->watcher->getCallbacks()
+            $watcher->getCallbacks()
         );
     }
 
     public function testUnbind()
     {
-        $cid = $this->watcher->on("create", function ($a) {
+        $watcher = new Watch("./test/fixtures", true);
+
+        $cid = $watcher->on("create", function ($a) {
             echo "test";
         });
 
-        $this->watcher->unbind($cid);
+        $watcher->unbind($cid);
 
         $this->assertNotContains(
             $cid,
-            $this->watcher->getCallbacks()
+            $watcher->getCallbacks()
+        );
+    }
+
+    public function testOnce()
+    {
+        $watcher = new Watch("./test/fixtures", true);
+
+        $test_create = null;
+        $test_delete = null;
+        $test_update = null;
+
+        $watcher->on("create", function ($changed) use (&$test_create) {
+            $test_create = $changed;
+        });
+
+        $watcher->on("delete", function ($changed) use (&$test_delete) {
+            $test_delete = $changed;
+        });
+
+        $watcher->on("update", function ($changed) use (&$test_update) {
+            $test_update = $changed;
+        });
+
+        file_put_contents("./test/fixtures/subfolder/newfile", "test");
+        unlink("./test/fixtures/subfolder/subfolder/file7");
+        file_put_contents("./test/fixtures/subfolder/file5", "test");
+
+        $watcher->once();
+
+        unlink("./test/fixtures/subfolder/newfile");
+        file_put_contents("./test/fixtures/subfolder/subfolder/file7", "");
+        file_put_contents("./test/fixtures/subfolder/file5", "");
+
+        $this->assertContains(
+            "./test/fixtures/subfolder/newfile",
+            $test_create
+        );
+
+        $this->assertContains(
+            "./test/fixtures/subfolder/file5",
+            $test_update
+        );
+
+        $this->assertContains(
+            "./test/fixtures/subfolder/subfolder/file7",
+            $test_delete
         );
     }
 }

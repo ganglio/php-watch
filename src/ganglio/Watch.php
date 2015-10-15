@@ -130,9 +130,27 @@ class Watch
         return $callback_id;
     }
 
+    /**
+     * Unbind callback
+     * @param  string $cid
+     */
     public function unbind($cid)
     {
         unset($this->callbacks[$cid]);
+    }
+
+    /**
+     * runs the watch once
+     */
+    public function once()
+    {
+        $diff = $this->_diff($this->_gather());
+
+        $callbacks = $this->callbacks; // ugly php<5.6 hach
+
+        foreach ($diff as $type => $changes) {
+            $callbacks($type, $changes);
+        }
     }
 
     /**
@@ -148,7 +166,7 @@ class Watch
         if (!$this->recursive) {
             $di = new \DirectoryIterator($this->path);
             $ii = new \CallbackFilterIterator($di, function ($current) {
-                return !$current->isDot();
+                return $current->isFile();
             });
         } else {
             $di = new \RecursiveDirectoryIterator($this->path, \FilesystemIterator::SKIP_DOTS);
@@ -173,19 +191,19 @@ class Watch
     {
 
         $diff = [
-            "+" => [],
-            "-" => [],
-            "!" => [],
+            "create" => [],
+            "delete" => [],
+            "update" => [],
         ];
 
-        $keys = array_merge(array_keys($this->fsObjects, $objects));
+        $keys = array_unique(array_merge(array_keys($this->fsObjects), array_keys($objects)));
         foreach ($keys as $key) {
             if (!array_key_exists($key, $this->fsObjects)) {
-                $diff["+"][] = $key;
+                $diff["create"][] = $key;
             } else if (!array_key_exists($key, $objects)) {
-                $diff["-"][] = $key;
+                $diff["delete"][] = $key;
             } else if ($this->fsObjects[$key]->signature != $objects[$key]->signature) {
-                $diff['!'][] = $key;
+                $diff['update'][] = $key;
             }
         }
 
