@@ -72,7 +72,7 @@ class CallbackCollection implements \ArrayAccess
      * @param  mixed $args
      * @return array<mixed>
      */
-    public function __invoke($type, $args=null)
+    public function __invoke($type=null, $args=null)
     {
         if (func_num_args()<1) {
             throw new \InvalidArgumentException(

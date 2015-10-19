@@ -34,6 +34,7 @@ class Callback
      */
     public function __invoke($args=null)
     {
-        return call_user_func_array($this->callback, func_get_args());
+        $args = func_get_args();
+        return call_user_func_array($this->callback, $args);
     }
 }
