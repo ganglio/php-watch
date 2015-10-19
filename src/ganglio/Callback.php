@@ -32,7 +32,7 @@ class Callback
      * @param  mixed $args
      * @return mixed
      */
-    public function __invoke($args=null)
+    public function __invoke($args = null)
     {
         $args = func_get_args();
         return call_user_func_array($this->callback, $args);
