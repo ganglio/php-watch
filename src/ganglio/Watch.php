@@ -10,7 +10,7 @@ class Watch
 
     /**
      * Container of the watched FS objects (files and directory)
-     * @var Array[FSObject]
+     * @var array<FSObject>
      */
     private $fsObjects;
 
@@ -30,7 +30,7 @@ class Watch
      * The list of all the registered callbacks
      * @var CallbackCollection
      */
-    private $callbacks = [];
+    private $callbacks = null;
 
     /**
      * Constructor
@@ -94,7 +94,7 @@ class Watch
 
     /**
      * returns the list of create callbacks ids
-     * @return Array[string]
+     * @return array<string>
      */
     public function getCallbacks()
     {
@@ -105,7 +105,7 @@ class Watch
      * Binds a callback to a change event
      * @param  string  $event
      * @param  Closure $callback
-     * @return string  a unique ic for the callback. Can be used to unbind
+     * @return string  a unique id for the callback. Can be used to unbind
      */
     public function on($event, $callback)
     {
@@ -155,7 +155,7 @@ class Watch
     {
         $diff = $this->diff($this->gather());
 
-        $callbacks = $this->callbacks; // ugly php<5.6 hach
+        $callbacks = $this->callbacks; // ugly php<5.6 hack
 
         foreach ($diff as $type => $changes) {
             $callbacks($type, $changes);
@@ -164,7 +164,7 @@ class Watch
 
     /**
      * Collects all the files in the current path according to the recursion setting
-     * @return Array[FSObject]
+     * @return array<FSObject>
      */
     private function gather()
     {
@@ -193,8 +193,8 @@ class Watch
 
     /**
      * Calculates the diff between the fsObjects attribute and the objects parameter
-     * @param  Array[FSObjects] $objects
-     * @return Array[String=>Array[FSObjects]]
+     * @param  array<FSObjects> $objects
+     * @return array<array<string>>
      */
     private function diff($objects)
     {

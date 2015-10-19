@@ -9,7 +9,7 @@ class CallbackCollection implements \ArrayAccess
 
     /**
      * the collection of callbacks
-     * @var array[Callback]
+     * @var array<Callback>
      */
     private $callbacks = [];
 
@@ -59,7 +59,7 @@ class CallbackCollection implements \ArrayAccess
 
     /**
      * returns all the callbacks keys
-     * @return array[string]
+     * @return array<string>
      */
     public function keys()
     {
@@ -70,7 +70,7 @@ class CallbackCollection implements \ArrayAccess
      * implementation of the __invoke magic method
      * @param  string $type
      * @param  mixed $args
-     * @return array[mixed]
+     * @return array<mixed>
      */
     public function __invoke()
     {
