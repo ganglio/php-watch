@@ -41,7 +41,7 @@ class Watch
     {
         $this->path = $path;
         $this->recursive = $recursive;
-        $this->fsObjects = $this->_gather();
+        $this->fsObjects = $this->gather();
         $this->callbacks = new CallbackCollection();
     }
 
@@ -61,7 +61,7 @@ class Watch
     public function setPath($path)
     {
         $this->path = $path;
-        $this->fsObjects = $this->_gather();
+        $this->fsObjects = $this->gather();
     }
 
     /**
@@ -80,7 +80,7 @@ class Watch
     public function setRecursive($recursive)
     {
         $this->recursive = $recursive;
-        $this->fsObjects = $this->_gather();
+        $this->fsObjects = $this->gather();
     }
 
     /**
@@ -110,19 +110,28 @@ class Watch
     public function on($event, $callback)
     {
         if (!($callback instanceof \Closure)) {
-            throw new \InvalidArgumentException("Argument 2 need to be an instance of \Closure", self::ERR_NOT_CLOSURE);
+            throw new \InvalidArgumentException(
+                "Argument 2 need to be an instance of \Closure",
+                self::ERR_NOT_CLOSURE
+            );
         }
 
         $numArgs = (new \ReflectionFunction($callback))->getNumberOfParameters();
 
         if ($numArgs < 1) {
-            throw new \InvalidArgumentException("Callback need at least one parameter", self::ERR_CALLBACK_FEW_PARAMETERS);
+            throw new \InvalidArgumentException(
+                "Callback need at least one parameter",
+                self::ERR_CALLBACK_FEW_PARAMETERS
+            );
         }
 
         $callback_id = spl_object_hash($callback);
 
         if (!in_array($event, ['create', 'delete', 'update'])) {
-            throw new \InvalidArgumentException("Argument 2 need to be either 'create', 'delete' or 'update'", self::ERR_UNIDENTIFIED_EVENT_NAME);
+            throw new \InvalidArgumentException(
+                "Argument 2 need to be either 'create', 'delete' or 'update'",
+                self::ERR_UNIDENTIFIED_EVENT_NAME
+            );
         }
 
         $this->callbacks[$callback_id] = new Callback($event, $callback);
@@ -144,7 +153,7 @@ class Watch
      */
     public function once()
     {
-        $diff = $this->_diff($this->_gather());
+        $diff = $this->diff($this->gather());
 
         $callbacks = $this->callbacks; // ugly php<5.6 hach
 
@@ -157,7 +166,7 @@ class Watch
      * Collects all the files in the current path according to the recursion setting
      * @return Array[FSObject]
      */
-    private function _gather()
+    private function gather()
     {
         $objects = [];
 
@@ -187,7 +196,7 @@ class Watch
      * @param  Array[FSObjects] $objects
      * @return Array[String=>Array[FSObjects]]
      */
-    private function _diff($objects)
+    private function diff($objects)
     {
 
         $diff = [
@@ -200,9 +209,9 @@ class Watch
         foreach ($keys as $key) {
             if (!array_key_exists($key, $this->fsObjects)) {
                 $diff["create"][] = $key;
-            } else if (!array_key_exists($key, $objects)) {
+            } elseif (!array_key_exists($key, $objects)) {
                 $diff["delete"][] = $key;
-            } else if ($this->fsObjects[$key]->signature != $objects[$key]->signature) {
+            } elseif ($this->fsObjects[$key]->signature != $objects[$key]->signature) {
                 $diff['update'][] = $key;
             }
         }

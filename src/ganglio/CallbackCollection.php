@@ -75,7 +75,10 @@ class CallbackCollection implements \ArrayAccess
     public function __invoke()
     {
         if (func_num_args()<1) {
-            throw new \InvalidArgumentException("the __invoke method need at least one argument", self::ERR_NUM_ARGUMENTS);
+            throw new \InvalidArgumentException(
+                "the __invoke method need at least one argument",
+                self::ERR_NUM_ARGUMENTS
+            );
         }
 
         $args = func_get_args();

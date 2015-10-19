@@ -26,7 +26,7 @@ class FSObject
 
         if (is_dir($name)) {
             $this->signature = md5($name);
-        } else if (is_file($name)) {
+        } elseif (is_file($name)) {
             $this->signature = md5(file_get_contents($name));
         } else {
             throw new Exceptions\FileNotFoundException($name);
