@@ -193,8 +193,8 @@ class Watch
 
     /**
      * Calculates the diff between the fsObjects attribute and the objects parameter
-     * @param  array<string,FSObjects> $objects
-     * @return array<array<string>>
+     * @param  array<string,FSObject> $objects
+     * @return array<string,array<string>>
      */
     private function diff($objects)
     {
