@@ -10,7 +10,7 @@ class Watch
 
     /**
      * Container of the watched FS objects (files and directory)
-     * @var array<FSObject>
+     * @var array<string, array<FSObject>>
      */
     private $fsObjects;
 
@@ -169,8 +169,6 @@ class Watch
     private function gather()
     {
         $objects = [];
-
-        $ii = null;
 
         if (!$this->recursive) {
             $di = new \DirectoryIterator($this->path);

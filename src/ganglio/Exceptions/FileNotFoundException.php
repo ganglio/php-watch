@@ -6,7 +6,6 @@ class FileNotFoundException extends \Exception
 {
     private $filename;
     /**
-     * @param string $message
      * @param string $filename
      */
     public function __construct($filename)

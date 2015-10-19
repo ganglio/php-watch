@@ -29,9 +29,10 @@ class Callback
 
     /**
      * __invoke magic method to expose the class as a callable
-     * @return [type] [description]
+     * @param  mixed $args
+     * @return mixed
      */
-    public function __invoke()
+    public function __invoke($args=null)
     {
         return call_user_func_array($this->callback, func_get_args());
     }
