@@ -164,7 +164,7 @@ class Watch
 
     /**
      * Collects all the files in the current path according to the recursion setting
-     * @return array<FSObject>
+     * @return array<string,FSObject>
      */
     private function gather()
     {
@@ -193,7 +193,7 @@ class Watch
 
     /**
      * Calculates the diff between the fsObjects attribute and the objects parameter
-     * @param  array<FSObjects> $objects
+     * @param  array<string,FSObjects> $objects
      * @return array<array<string>>
      */
     private function diff($objects)
