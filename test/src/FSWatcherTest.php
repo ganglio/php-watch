@@ -49,13 +49,10 @@ class FSWatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($isChanged);
     }
 
-    public function testAttachDetach() {
+    public function testAttachDetach()
+    {
         $myw = new FSWatcher("./test/fixtures");
         $myo = new DummyObserver();
-
-        $myw->attach($myo);
-
-        $this->setExpectedException("\InvalidArgumentException", FSWatcher::ERR_OBSERVER_ALREADY_REGISTERED);
 
         $myw->attach($myo);
 
@@ -68,6 +65,24 @@ class FSWatcherTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse(
             $myw->has($myo)
         );
+    }
+
+    public function testAttachException()
+    {
+        $myw = new FSWatcher("./test/fixtures");
+        $myo = new DummyObserver();
+
+        $myw->attach($myo);
+
+        $this->setExpectedException("\InvalidArgumentException", FSWatcher::ERR_OBSERVER_ALREADY_REGISTERED);
+
+        $myw->attach($myo);
+    }
+
+    public function testDetachException()
+    {
+        $myw = new FSWatcher("./test/fixtures");
+        $myo = new DummyObserver();
 
         $this->setExpectedException("\InvalidArgumentException", FSWatcher::ERR_UNKNOWN_OBSERVER);
 

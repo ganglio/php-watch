@@ -12,13 +12,13 @@ class Watch implements Observer
      * The list of all the registered callbacks
      * @var CallbackCollection
      */
-    private $callbacks = null;
+    private $callbacks;
 
     /**
      * The observable object
      * @var null
      */
-    private $observable = null;
+    private $observable;
 
     /**
      * Constructor
