@@ -8,5 +8,6 @@ interface Observable
 {
     public function attach(Observer $observer);
     public function detach(Observer $observer);
+    public function has(Observer $observer);
     public function notify($args = null);
 }

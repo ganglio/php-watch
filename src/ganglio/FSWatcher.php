@@ -123,6 +123,20 @@ class FSWatcher implements Observable, Pollable
                 self::ERR_UNKNOWN_OBSERVER
             );
         }
+
+        unset($this->observers[$observer_hash]);
+    }
+
+    /**
+     * Implements the has method defined in Observable
+     * @param  Observer $observer
+     * @return boolean
+     */
+    public function has(Observer $observer)
+    {
+        $observer_hash = spl_object_hash($observer);
+
+        return isset($this->observers[$observer_hash]);
     }
 
     /**

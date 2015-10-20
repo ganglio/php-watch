@@ -3,7 +3,16 @@
 namespace WatchTests;
 
 use ganglio\Watch\FSWatcher;
+use ganglio\Watch\Observer;
 use ganglio\Watch\Exceptions\FileNotFoundException;
+
+class DummyObserver implements Observer
+{
+    public function update($args = null)
+    {
+        return $args;
+    }
+}
 
 class FSWatcherTest extends \PHPUnit_Framework_TestCase
 {
@@ -38,5 +47,30 @@ class FSWatcherTest extends \PHPUnit_Framework_TestCase
         file_put_contents("./test/fixtures/subfolder/file5", "");
 
         $this->assertTrue($isChanged);
+    }
+
+    public function testAttachDetach() {
+        $myw = new FSWatcher("./test/fixtures");
+        $myo = new DummyObserver();
+
+        $myw->attach($myo);
+
+        $this->setExpectedException("\InvalidArgumentException", FSWatcher::ERR_OBSERVER_ALREADY_REGISTERED);
+
+        $myw->attach($myo);
+
+        $this->assertTrue(
+            $myw->has($myo)
+        );
+
+        $myw->detach($myo);
+
+        $this->assertFalse(
+            $myw->has($myo)
+        );
+
+        $this->setExpectedException("\InvalidArgumentException", FSWatcher::ERR_UNKNOWN_OBSERVER);
+
+        $myw->detach($myo);
     }
 }
