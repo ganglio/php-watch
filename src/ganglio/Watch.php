@@ -2,29 +2,11 @@
 
 namespace ganglio\Watch;
 
-class Watch
+class Watch implements Observer
 {
     const ERR_NOT_CLOSURE             = 1;
     const ERR_UNIDENTIFIED_EVENT_NAME = 2;
     const ERR_CALLBACK_FEW_PARAMETERS = 4;
-
-    /**
-     * Container of the watched FS objects (files and directory)
-     * @var array<string, array<FSObject>>
-     */
-    private $fsObjects;
-
-    /**
-     * The watched path
-     * @var string
-     */
-    private $path;
-
-    /**
-     * Recurse subdirectory
-     * @var boolean
-     */
-    private $recursive;
 
     /**
      * The list of all the registered callbacks
@@ -33,63 +15,22 @@ class Watch
     private $callbacks = null;
 
     /**
+     * The observable object
+     * @var null
+     */
+    private $observable = null;
+
+    /**
      * Constructor
      * @param string  $path      The path to watch
      * @param boolean $recursive Recurse subdirectory?
      */
-    public function __construct($path, $recursive = true)
+    public function __construct(Observable $observable)
     {
-        $this->path = $path;
-        $this->recursive = $recursive;
-        $this->fsObjects = $this->gather();
+        $this->observable = $observable;
+        $this->observable->attach($this);
+
         $this->callbacks = new CallbackCollection();
-    }
-
-    /**
-     * Get the watched path
-     * @return string
-     */
-    public function getPath()
-    {
-        return $this->path;
-    }
-
-    /**
-     * Set the watched path
-     * @param string $path
-     */
-    public function setPath($path)
-    {
-        $this->path = $path;
-        $this->fsObjects = $this->gather();
-    }
-
-    /**
-     * Gets the recursive
-     * @return boolean
-     */
-    public function getRecursive()
-    {
-        return $this->recursive;
-    }
-
-    /**
-     * Set the recursive
-     * @param boolean $recursive
-     */
-    public function setRecursive($recursive)
-    {
-        $this->recursive = $recursive;
-        $this->fsObjects = $this->gather();
-    }
-
-    /**
-     * Returns the number of watched objects
-     * @return integer
-     */
-    public function getNumberOfWatchedObjects()
-    {
-        return count($this->fsObjects);
     }
 
     /**
@@ -149,71 +90,16 @@ class Watch
     }
 
     /**
-     * runs the watch once
+     * Implements the update method defined by Observer
+     * @param  array<string, array<string>> $args
+     * @return void
      */
-    public function once()
+    public function update($args = null)
     {
-        $diff = $this->diff($this->gather());
-
         $callbacks = $this->callbacks; // ugly php<5.6 hack
 
-        foreach ($diff as $type => $changes) {
+        foreach ($args as $type => $changes) {
             $callbacks($type, $changes);
         }
-    }
-
-    /**
-     * Collects all the files in the current path according to the recursion setting
-     * @return array<string,FSObject>
-     */
-    private function gather()
-    {
-        $objects = [];
-
-        if (!$this->recursive) {
-            $di = new \DirectoryIterator($this->path);
-            $ii = new \CallbackFilterIterator($di, function ($current) {
-                return $current->isFile();
-            });
-        } else {
-            $di = new \RecursiveDirectoryIterator($this->path, \FilesystemIterator::SKIP_DOTS);
-            $ii = new \RecursiveIteratorIterator($di, \RecursiveIteratorIterator::SELF_FIRST);
-        }
-
-        if (!is_null($ii)) {
-            foreach ($ii as $obj) {
-                $objects[$obj->getPathName()] = new FSObject($obj->getPathName());
-            }
-        }
-
-        return $objects;
-    }
-
-    /**
-     * Calculates the diff between the fsObjects attribute and the objects parameter
-     * @param  array<string,FSObject> $objects
-     * @return array<string,array<string>>
-     */
-    private function diff($objects)
-    {
-
-        $diff = [
-            "create" => [],
-            "delete" => [],
-            "update" => [],
-        ];
-
-        $keys = array_unique(array_merge(array_keys($this->fsObjects), array_keys($objects)));
-        foreach ($keys as $key) {
-            if (!array_key_exists($key, $this->fsObjects)) {
-                $diff["create"][] = $key;
-            } elseif (!array_key_exists($key, $objects)) {
-                $diff["delete"][] = $key;
-            } elseif ($this->fsObjects[$key]->signature != $objects[$key]->signature) {
-                $diff['update'][] = $key;
-            }
-        }
-
-        return $diff;
     }
 }
